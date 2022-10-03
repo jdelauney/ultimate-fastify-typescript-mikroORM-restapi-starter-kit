@@ -12,9 +12,9 @@ const buildFastifyServer = (baseUrl = 'api/', opts = {}): FastifyInstance => {
 const app: FastifyInstance = buildFastifyServer('api/', {
   logger: {
     level: 'info',
-    transport: {
-      target: 'pino-pretty',
-    },
+    /*  transport: {
+        target: 'pino-pretty',
+      },*/
   },
 });
 
