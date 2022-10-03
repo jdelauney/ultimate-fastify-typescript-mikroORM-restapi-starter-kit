@@ -30,6 +30,7 @@ specifiers:
   fastify: ^4.6.0
   fastify-auth: ^1.2.0
   fastify-formbody: ^5.3.0
+  fastify-graceful-shutdown: ^3.4.0
   fastify-helmet: ^7.1.0
   fastify-jwt: ^4.2.0
   fastify-plugin: ^4.2.1
@@ -59,6 +60,7 @@ dependencies:
   fastify: 4.6.0
   fastify-auth: 1.2.0
   fastify-formbody: 5.3.0
+  fastify-graceful-shutdown: 3.4.0
   fastify-helmet: 7.1.0
   fastify-jwt: 4.2.0
   fastify-plugin: 4.2.1
@@ -2216,6 +2218,13 @@ packages:
     dependencies:
       fastify-formbody-deprecated: /fastify-formbody/5.2.0
       process-warning: 1.0.0
+    dev: false
+
+  /fastify-graceful-shutdown/3.4.0:
+    resolution: {integrity: sha512-dn5xNfRhInAqcwbWUqXZVyNIzlyzLDCrvtcUkxFbbmjlKgJGayYDNZ81nl1xIvU8AImf4/48p5tPFfTP7e3yfw==}
+    dependencies:
+      fastify-plugin: 4.2.1
+      fastparallel: 2.4.1
     dev: false
 
   /fastify-helmet/7.0.1:

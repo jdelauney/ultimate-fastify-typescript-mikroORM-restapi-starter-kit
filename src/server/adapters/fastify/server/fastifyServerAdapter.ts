@@ -6,6 +6,8 @@ import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import sensible from '@fastify/sensible';
 import formbody from '@fastify/formbody';
+import gracefulShutdown from 'fastify-graceful-shutdown';
+
 import { loadEnvironmentVariable } from '../../../../core/utils/configurationHelper';
 
 export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
@@ -65,6 +67,13 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
     });
     await this.fastify.register(sensible);
     await this.fastify.register(formbody);
+    await this.fastify.register(gracefulShutdown);
+    await this.fastify.after(() => {
+      this.fastify.gracefulShutdown((_signal, next) => {
+        console.log('Upps!');
+        next();
+      });
+    });
     await this.fastify.register(swagger, {
       routePrefix: '/swagger',
       swagger: {

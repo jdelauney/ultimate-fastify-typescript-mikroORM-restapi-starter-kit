@@ -18,8 +18,11 @@ describe('Feature : Fastify server', () => {
     fastifyRouter.setRouter(fastifyServer.getServerInstance());
     await fastifyRouter.addRoute(healthCheckRoutes[0].path, healthCheckRoutes[0].method, healthCheckRoutes[0].handler, healthCheckRoutes[0].options);
     await fastifyServer.start();
-  });
 
+    return async () => {
+      await fastifyServer.stop();
+    };
+  });
   describe('Given a Fastify Server Class ', () => {
     describe('When we request : /api/healthcheck', () => {
       test('Then it Should return response status code : 200', async () => {
@@ -54,5 +57,5 @@ describe('Feature : Fastify server', () => {
   });
   afterAll(async () => {
     await fastifyServer.stop();
-  });
+  }, 30000);
 });
