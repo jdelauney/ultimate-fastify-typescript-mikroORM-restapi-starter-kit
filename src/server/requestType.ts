@@ -1,0 +1,7 @@
+export enum requestType {
+  REQUEST_GET,
+  REQUEST_POST,
+  REQUEST_UPDATE,
+  REQUEST_PATCH,
+  REQUEST_DELETE,
+}
