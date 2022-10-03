@@ -6,7 +6,7 @@ import path from 'path';
 describe('Feature : Fastify server', () => {
   beforeAll(async () => {
     const result = await dotenv.config({
-      path: path.resolve(__dirname, '.env'),
+      path: path.resolve(__dirname, '.env.test'),
     });
 
     if (result.error) {

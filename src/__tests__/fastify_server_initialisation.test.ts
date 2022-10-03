@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { beforeAll, describe, expect, test } from 'vitest';
 import supertest from 'supertest';
 import FastifyServerAdapter from '../server/adapters/fastify/server/fastifyServerAdapter';
 import FastifyRouterManager from '../server/adapters/fastify/routerManager/fastifyRouterManager';
@@ -18,10 +18,6 @@ describe('Feature : Fastify server', () => {
     fastifyRouter.setRouter(fastifyServer.getServerInstance());
     await fastifyRouter.addRoute(healthCheckRoutes[0].path, healthCheckRoutes[0].method, healthCheckRoutes[0].handler, healthCheckRoutes[0].options);
     await fastifyServer.start();
-
-    return async () => {
-      await fastifyServer.stop();
-    };
   });
   describe('Given a Fastify Server Class ', () => {
     describe('When we request : /api/healthcheck', () => {
@@ -57,5 +53,5 @@ describe('Feature : Fastify server', () => {
   });
   afterAll(async () => {
     await fastifyServer.stop();
-  }, 30000);
+  });
 });

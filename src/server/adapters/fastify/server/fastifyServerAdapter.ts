@@ -19,12 +19,12 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
 
   public constructor(baseUrl: string, opts = {}) {
     super(baseUrl, {
-      logger: {
+      /*logger: {
         level: 'info',
-        /*transport: {
+        /!*transport: {
           target: 'pino-pretty',
-        },*/
-      },
+        },*!/
+      },*/
       ...opts,
     });
     const envPort: string | undefined = loadEnvironmentVariable('SERVER_PORT');
@@ -68,9 +68,10 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
     await this.fastify.register(sensible);
     await this.fastify.register(formbody);
     await this.fastify.register(gracefulShutdown);
-    await this.fastify.after(() => {
+    this.fastify.after(() => {
       this.fastify.gracefulShutdown((_signal, next) => {
         console.log('Upps!');
+        this.fastify.close();
         next();
       });
     });
@@ -108,5 +109,6 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
 
   public async stop() {
     await this.fastify.close();
+    process.exit();
   }
 }
