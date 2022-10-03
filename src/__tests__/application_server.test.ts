@@ -15,11 +15,8 @@ const initServer = async () => {
   });
 
   if (result.error) {
-    //console.log(result.error);
     throw result.error;
   }
-
-  //console.log(result.parsed);
 
   const baseAPIUrl = '/api';
   const fastifyServer = await FastifyServerAdapter.Create({

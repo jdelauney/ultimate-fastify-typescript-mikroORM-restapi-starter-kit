@@ -7,7 +7,7 @@
     "dev": "tsx watch src/app.ts",
     "build": "rm -rf build && set NODE_ENV=production && esbuild src/app.ts --bundle --platform=node --outfile=dist/index.js --minify",
     "start": "set NODE_ENV=production && pnpm run build && cp src/.env dist/.env && node dist/index.js",
-    "test": "vitest",
+    "test": "set NODE_ENV=test && vitest",
     "test:watch": "set NODE_ENV=test && vitest --watch",
     "test:coverage": "vitest --coverage",
     "lint": "eslint src --fix",

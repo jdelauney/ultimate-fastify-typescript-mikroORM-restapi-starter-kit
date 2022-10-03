@@ -63,7 +63,7 @@ describe('Feature : Fastify server', () => {
       });
     });
   });
-  // afterAll(async () => {
-  //   await fastifyServer.stop();
-  // });
+  afterAll(async () => {
+    await fastifyServer.stop();
+  });
 });
