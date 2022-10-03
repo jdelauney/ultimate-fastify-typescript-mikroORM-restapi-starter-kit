@@ -9,10 +9,10 @@ export abstract class AbstractHTTPServerAdapter implements IHTTPServerAdapter {
   protected baseUrl: string;
   protected options: object = {};
 
-  protected constructor(baseUrl: string, opts = {}) {
+  protected constructor(baseUrl: string, options = {}) {
     this.baseUrl = baseUrl;
     this.options = {
-      ...opts,
+      ...options,
     };
   }
 

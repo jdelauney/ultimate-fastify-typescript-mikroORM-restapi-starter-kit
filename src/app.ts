@@ -14,7 +14,7 @@ import path from 'path';
     throw result.error;
   }
   const baseAPIUrl = '/api';
-  const fastifyServer = await FastifyServerAdapter.Create({ baseUrl: baseAPIUrl });
+  const fastifyServer = await FastifyServerAdapter.Create({ baseUrl: baseAPIUrl, options: { logger: true } });
   const Application: ApplicationServer = await ApplicationServer.Create(fastifyServer, new FastifyRouterManager(baseAPIUrl, ''), [new HealthCheckController()]);
 
   await Application.run();

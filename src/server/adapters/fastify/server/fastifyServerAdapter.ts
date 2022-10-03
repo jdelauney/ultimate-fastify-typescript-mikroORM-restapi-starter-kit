@@ -6,8 +6,7 @@ import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import sensible from '@fastify/sensible';
 import formbody from '@fastify/formbody';
-import gracefulShutdown from 'fastify-graceful-shutdown';
-
+//import gracefulShutdown from 'fastify-graceful-shutdown';
 import { loadEnvironmentVariable } from '../../../../core/utils/configurationHelper';
 
 export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
@@ -17,22 +16,34 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
   private readonly defaultPort = 3000;
   private readonly port: number;
 
-  public constructor(baseUrl: string, opts = {}) {
-    super(baseUrl, {
-      /*logger: {
-        level: 'info',
-        /!*transport: {
-          target: 'pino-pretty',
-        },*!/
-      },*/
-      ...opts,
-    });
+  public constructor(baseUrl: string, options = {}) {
+    /* const envToLogger = {
+       development: {
+         transport: {
+           target: 'pino-pretty',
+           options: {
+             translateTime: 'HH:MM:ss Z',
+             ignore: 'pid,hostname',
+           },
+         },
+       },
+       production: true,
+       test: false,
+     };
+     const environment: any = process.env.NODE_ENV !== undefined ? process.env.NODE_ENV : 'development';
+     super(baseUrl, {
+       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+       // @ts-ignore
+       logger: envToLogger[environment] ?? true,
+       ...opts,
+     });*/
+    super(baseUrl, { ...options });
     const envPort: string | undefined = loadEnvironmentVariable('SERVER_PORT');
     this.port = envPort === undefined ? this.defaultPort : Number(envPort);
   }
 
-  public static async Create({ baseUrl, opts = {} }: { baseUrl: string; opts?: object }): Promise<FastifyServerAdapter> {
-    const instance: FastifyServerAdapter = new FastifyServerAdapter(baseUrl, opts);
+  public static async Create({ baseUrl, options = {} }: { baseUrl: string; options?: object }): Promise<FastifyServerAdapter> {
+    const instance: FastifyServerAdapter = new FastifyServerAdapter(baseUrl, options);
     await instance.initialize();
     await instance.initPlugins();
     return Promise.resolve(instance);
@@ -67,14 +78,14 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
     });
     await this.fastify.register(sensible);
     await this.fastify.register(formbody);
-    await this.fastify.register(gracefulShutdown);
+    /*await this.fastify.register(gracefulShutdown);
     this.fastify.after(() => {
       this.fastify.gracefulShutdown((_signal, next) => {
         console.log('Upps!');
         this.fastify.close();
         next();
       });
-    });
+    });*/
     await this.fastify.register(swagger, {
       routePrefix: '/swagger',
       swagger: {
@@ -100,7 +111,9 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
     try {
       await this.fastify.listen({ port: this.port });
       await this.fastify.ready();
-      this.fastify.swagger();
+      if (process.env.NODE_ENV === 'development') {
+        this.fastify.swagger();
+      }
     } catch (err) {
       this.fastify.log.error(err);
       process.exit(1);
@@ -109,6 +122,6 @@ export default class FastifyServerAdapter extends AbstractHTTPServerAdapter {
 
   public async stop() {
     await this.fastify.close();
-    process.exit();
+    //process.exit();
   }
 }

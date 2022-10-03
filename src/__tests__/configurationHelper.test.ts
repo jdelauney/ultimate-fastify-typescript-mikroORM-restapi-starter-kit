@@ -3,7 +3,7 @@ import { loadEnvironmentVariable } from '../core/utils/configurationHelper';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-describe('Feature : Fastify server', () => {
+describe('Feature : loadEnvironmentVariable', () => {
   beforeAll(async () => {
     const result = await dotenv.config({
       path: path.resolve(__dirname, '.env.test'),

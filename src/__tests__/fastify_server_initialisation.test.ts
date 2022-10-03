@@ -9,15 +9,26 @@ let fastifyServer: FastifyServerAdapter;
 let fastifyRouter: FastifyRouterManager;
 let healthCheckController: HealthCheckController;
 
+const initServer = async () => {
+  fastifyServer = await FastifyServerAdapter.Create({ baseUrl: '/api' });
+  fastifyRouter = new FastifyRouterManager(fastifyServer.getBaseUrl(), '');
+  healthCheckController = new HealthCheckController();
+  const healthCheckRoutes: ControllerRoutes = healthCheckController.getRoutes();
+  fastifyRouter.setRouter(fastifyServer.getServerInstance());
+  await fastifyRouter.addRoute(healthCheckRoutes[0].path, healthCheckRoutes[0].method, healthCheckRoutes[0].handler, healthCheckRoutes[0].options);
+};
+
 describe('Feature : Fastify server', () => {
   beforeAll(async () => {
-    fastifyServer = await FastifyServerAdapter.Create({ baseUrl: '/api' });
-    fastifyRouter = new FastifyRouterManager(fastifyServer.getBaseUrl(), '');
-    healthCheckController = new HealthCheckController();
-    const healthCheckRoutes: ControllerRoutes = healthCheckController.getRoutes();
-    fastifyRouter.setRouter(fastifyServer.getServerInstance());
-    await fastifyRouter.addRoute(healthCheckRoutes[0].path, healthCheckRoutes[0].method, healthCheckRoutes[0].handler, healthCheckRoutes[0].options);
+    await initServer();
     await fastifyServer.start();
+    /* fastifyServer = await FastifyServerAdapter.Create({ baseUrl: '/api' });
+     fastifyRouter = new FastifyRouterManager(fastifyServer.getBaseUrl(), '');
+     healthCheckController = new HealthCheckController();
+     const healthCheckRoutes: ControllerRoutes = healthCheckController.getRoutes();
+     fastifyRouter.setRouter(fastifyServer.getServerInstance());
+     await fastifyRouter.addRoute(healthCheckRoutes[0].path, healthCheckRoutes[0].method, healthCheckRoutes[0].handler, healthCheckRoutes[0].options);
+     await fastifyServer.start();*/
   });
   describe('Given a Fastify Server Class ', () => {
     describe('When we request : /api/healthcheck', () => {
@@ -41,6 +52,7 @@ describe('Feature : Fastify server', () => {
         const response = await supertest(fastifyServer.getServerInstance().server).get('/notexist');
         expect(response.statusCode).toBe(404);
       });
+
       test("Then it Should return response as json : { error: 'Not Found', message: 'Route GET:/notexist not found', statusCode: 404 }", async () => {
         const response = await supertest(fastifyServer.getServerInstance().server).get('/notexist');
         expect(response.body).toStrictEqual({
@@ -51,7 +63,7 @@ describe('Feature : Fastify server', () => {
       });
     });
   });
-  afterAll(async () => {
-    await fastifyServer.stop();
-  });
+  // afterAll(async () => {
+  //   await fastifyServer.stop();
+  // });
 });

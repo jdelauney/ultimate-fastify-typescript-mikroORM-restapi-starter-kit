@@ -9,20 +9,35 @@ import path from 'path';
 
 let Application: ApplicationServer;
 
+const initServer = async () => {
+  const result = await dotenv.config({
+    path: path.resolve(__dirname, '.env.test'),
+  });
+
+  if (result.error) {
+    //console.log(result.error);
+    throw result.error;
+  }
+
+  //console.log(result.parsed);
+
+  const baseAPIUrl = '/api';
+  const fastifyServer = await FastifyServerAdapter.Create({
+    baseUrl: baseAPIUrl,
+    /*options: {
+      logger: {
+        level: 'info',
+        transport: {
+          target: 'pino-pretty',
+        },
+      },
+    },*/
+  });
+  Application = await ApplicationServer.Create(fastifyServer, new FastifyRouterManager(baseAPIUrl, ''), [new HealthCheckController()]);
+};
 describe('Feature : Application end-point', () => {
   beforeAll(async () => {
-    const result = await dotenv.config({
-      path: path.resolve(__dirname, '.env.test'),
-    });
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    const baseAPIUrl = '/api';
-    const fastifyServer = await FastifyServerAdapter.Create({ baseUrl: baseAPIUrl });
-    Application = await ApplicationServer.Create(fastifyServer, new FastifyRouterManager(baseAPIUrl, ''), [new HealthCheckController()]);
-
+    await initServer();
     await Application.run();
   });
 
@@ -43,11 +58,12 @@ describe('Feature : Application end-point', () => {
         expect(response.body).toStrictEqual({ message: 'Server health check is ok' });
       });
     });
-    /*describe('When we request a bad url : /notexist', () => {
+    describe('When we request a bad url : /notexist', () => {
       test('Then it Should return response status code : 404', async () => {
         const response = await supertest(Application.getServerInstance().server).get('/notexist');
         expect(response.statusCode).toBe(404);
       });
+
       test("Then it Should return response as json : { error: 'Not Found', message: 'Route GET:/notexist not found', statusCode: 404 }", async () => {
         const response = await supertest(Application.getServerInstance().server).get('/notexist');
         expect(response.body).toStrictEqual({
@@ -56,9 +72,9 @@ describe('Feature : Application end-point', () => {
           statusCode: 404,
         });
       });
-    });*/
+    });
   });
   afterAll(async () => {
     await Application.stop();
-  }, 1000);
+  });
 });

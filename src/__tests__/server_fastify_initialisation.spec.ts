@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { beforeAll, describe, expect, test } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
 
 const buildFastifyServer = (baseUrl = 'api/', opts = {}): FastifyInstance => {
@@ -9,23 +9,27 @@ const buildFastifyServer = (baseUrl = 'api/', opts = {}): FastifyInstance => {
   return app;
 };
 
-const app: FastifyInstance = buildFastifyServer('api/', {
+const app: FastifyInstance = buildFastifyServer(
+  'api/',
+  {} /*{
   logger: {
     level: 'info',
-    /*  transport: {
-        target: 'pino-pretty',
-      },*/
+    transport: {
+      target: 'pino-pretty',
+    },
   },
-});
+}*/,
+);
 
-describe('Feature : Application Server launcher', () => {
-  beforeAll(() => {
-    app.listen({ port: 3000 }, err => {
+describe('Feature : Application Server spec', () => {
+  beforeAll(async () => {
+    await app.listen({ port: 3000 }, err => {
       if (err) {
         app.log.error(err);
         process.exit(1);
       }
     });
+    await app.ready();
   });
 
   describe('Given a Fastify Server Application ', () => {
@@ -55,7 +59,7 @@ describe('Feature : Application Server launcher', () => {
       });
     });
   });
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });
